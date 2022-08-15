@@ -1,0 +1,5 @@
+model
+build
+dist
+run.spec
+__pycache__
