@@ -1,7 +1,7 @@
 import os
 
 path = os.getcwd().replace('\\', '/')
-os.system(path + '/src/detectPerson.vbs')
+os.system(path + '/utils/detectPerson.vbs')
 
 # while True:
 #   time.sleep(2)
