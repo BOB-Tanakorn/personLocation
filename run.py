@@ -1,7 +1,6 @@
 import os
+import subprocess
 
 path = os.getcwd().replace('\\', '/')
-os.system(path + '/utils/detectPerson.vbs')
 
-# while True:
-#   time.sleep(2)
+subprocess.call([path + '/utils/detectPerson.bat'])
