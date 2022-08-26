@@ -85,4 +85,8 @@ else:
     mycursor.execute('UPDATE machine_noload_status SET status=0 WHERE id=1')
     mydb.commit()
 
+
+cv2.imshow('frame', image_np)
+cv2.waitKey(0)
+
 print("------------------------------------------------------------------------")
