@@ -17,6 +17,8 @@ programsName = programsName.replace("'", "")
 cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
 cursor.commit()
 
+print('{} >>> start programs detect person in meeting room'.title(),format(datetime.datetime.now()))
+
 def _lineNotify(payload,file=None):
     import requests
     url = 'https://notify-api.line.me/api/notify'
@@ -119,4 +121,4 @@ cursor.commit()
 
 cap.release()
 cv2.destroyAllWindows()
-print("------------------------------------------------------------------------")
+print('{} >>> end programs detect person in meeting room'.title(),format(datetime.datetime.now()))

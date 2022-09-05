@@ -3,6 +3,7 @@ import subprocess
 import pyodbc
 import time
 
+pathBacthFile = os.getcwd().replace('\\', '/')
 
 while True:
     #connect database
@@ -20,10 +21,10 @@ while True:
 
 
     if prgRedey == True:
-        print('run')
+        os.system(pathBacthFile + '/personMeetingRoom.bat')
 
     else:
         print('not run')
     
     # break
-    time.sleep(5)
+    time.sleep(60)
