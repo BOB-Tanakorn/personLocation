@@ -17,6 +17,21 @@ programsName = programsName.replace("'", "")
 cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
 cursor.commit()
 
+def _lineNotify(payload,file=None):
+    import requests
+    url = 'https://notify-api.line.me/api/notify'
+    token = 'L6EXQTUrlZT0Bz7D9LV5HLwDTiG4BkQ1FI6yvnVJdSa'	#กลุ่มตรวจสอบวัตถุดิบ
+    # token = "EVPO0TRxPKQO8QtoIkX2p1uQFVuumR2FEUccTjYDoOY" #กลุ่มเทส she
+    # token = '8edczGWSP1hnMeLXKfXseH8Ck1CATRTvLRL5CFSb3PW'	#she
+    headers = {'Authorization':'Bearer '+token}
+    return requests.post(url, headers=headers , data = payload, files=file)
+
+
+def notifyFile(filename, person):
+    file = {'imageFile':open(filename,'rb')}
+    payload = {'message':'แจ้งเตือน ตรวจพบบุคคลในห้องประชุมจำนวนคน : {} คน'.format(person)}
+    return _lineNotify(payload,file)
+
 #aws
 mydb = mysql.connector.connect(
   host="db-rds-ptf.cpuqyug93oho.ap-southeast-1.rds.amazonaws.com",
@@ -39,7 +54,7 @@ try:
 except:
     pass
 
-path_camera = "rtsp://admin:999999999@192.168.1.207:10554/tcp/av0_0"
+path_camera = "rtsp://admin:888888@192.168.1.207:10554/tcp/av0_0"
 time_strf = time.strftime("%d-" "%m-" "%Y"" " "%H." "%M." "%S")
 
 try:
@@ -68,34 +83,40 @@ if save_picture_success == True:
         use_normalized_coordinates=True,
         skip_labels=False,
         skip_scores=True,
-        min_score_thresh=0.5,
+        min_score_thresh=0.9,
         line_thickness=2)
 
-    count_len = 0
-    count_person = 0
-    print('class', (output_dict['detection_classes']))
+    countLen = 0
+    countPerson = 0
+    # print('class', (output_dict['detection_classes']))
     for i in (output_dict['detection_classes']):
         if i == 1:
-            values_person = output_dict['detection_scores'][count_len] >= 0.9
-            if values_person == True:
-                count_person += 1
-        count_len += 1
+            valuesPerson = output_dict['detection_scores'][countLen] >= 0.9
+            if valuesPerson == True:
+                countPerson += 1
+        countLen += 1
 
     image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
     cv2.imwrite(path_img_after, image_np)
-    if count_person >= 1:
+
+    if countPerson >= 1:
+        notifyFile(path_img_after, countPerson)
         mycursor = mydb.cursor()
         mycursor.execute('UPDATE machine_noload_status SET status=1 WHERE id=1')
         mydb.commit()
 
     else:
+        # notifyFile(path_img_after, countPerson)
         mycursor = mydb.cursor()
         mycursor.execute('UPDATE machine_noload_status SET status=0 WHERE id=1')
         mydb.commit()
 
-    cv2.imshow('frame', image_np)
-    cv2.waitKey(0)
+    # cv2.imshow('frame', image_np)
+    # cv2.waitKey(0)
 
 cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, programsName))
 cursor.commit()
+
+cap.release()
+cv2.destroyAllWindows()
 print("------------------------------------------------------------------------")
