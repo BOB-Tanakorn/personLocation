@@ -44,12 +44,12 @@ mydb = mysql.connector.connect(
 
 path = os.getcwd().replace('\\', '/')
 
-labelmap_path = path + '/mscoco_label_map.pbtxt'
+labelmap_path = path + '/utils/mscoco_label_map.pbtxt'
 category_index = label_map_util.create_category_index_from_labelmap(labelmap_path, use_display_name=True)
 tf.keras.backend.clear_session()
-model = tf.saved_model.load(path + "/model")
+model = tf.saved_model.load(path + "/utils/model")
 
-path_img_after = path + "/picture/img_after.png"
+path_img_after = path + "/utils/picture/img_after.png"
 
 try:
     os.remove(path_img_after)

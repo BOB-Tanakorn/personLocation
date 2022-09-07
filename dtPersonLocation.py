@@ -7,7 +7,7 @@ pathBacthFile = os.getcwd().replace('\\', '/')
 
 countMeetingRoom = 0
 
-startMeetingRoom = 10
+startMeetingRoom = 600
 
 while True:
     countMeetingRoom += 1
@@ -27,12 +27,13 @@ while True:
                 else:
                     prgRedey = False
                     break
+
             time.sleep(5)
             if prgRedey == True:
                 os.system(pathBacthFile + '/utils/meetingRoom.bat')
                 timeProcess = 1
                 countMeetingRoom = 0
-                startMeetingRoom = 10
+                startMeetingRoom = 600
                 detectMeetingRoom = False
     
     # break
