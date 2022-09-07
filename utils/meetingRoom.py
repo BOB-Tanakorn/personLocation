@@ -17,7 +17,7 @@ programsName = programsName.replace("'", "")
 cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
 cursor.commit()
 
-print('{} >>> start programs detect person in meeting room'.title(),format(datetime.datetime.now()))
+print('{} >>> start programs detect person in meeting room'.title().format(datetime.datetime.now()))
 
 def _lineNotify(payload,file=None):
     import requests
@@ -44,12 +44,12 @@ mydb = mysql.connector.connect(
 
 path = os.getcwd().replace('\\', '/')
 
-labelmap_path = path + '/utils/mscoco_label_map.pbtxt'
+labelmap_path = path + '/mscoco_label_map.pbtxt'
 category_index = label_map_util.create_category_index_from_labelmap(labelmap_path, use_display_name=True)
 tf.keras.backend.clear_session()
-model = tf.saved_model.load(path + "/utils/model")
+model = tf.saved_model.load(path + "/model")
 
-path_img_after = path + "/utils/picture/img_after.png"
+path_img_after = path + "/picture/img_after.png"
 
 try:
     os.remove(path_img_after)
@@ -120,5 +120,5 @@ cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (
 cursor.commit()
 
 cap.release()
-cv2.destroyAllWindows()
-print('{} >>> end programs detect person in meeting room'.title(),format(datetime.datetime.now()))
+# cv2.destroyAllWindows()
+print('{} >>> end programs detect person in meeting room'.title().format(datetime.datetime.now()))
