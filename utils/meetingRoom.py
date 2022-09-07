@@ -7,6 +7,9 @@ import datetime
 import mysql.connector
 import pyodbc
 
+
+print('{} >>> start detect person location meeting room'.title().format(datetime.datetime.now()))
+
 #connect database
 connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=sa; PWD=123456")
 cursor = connect.cursor()
@@ -16,8 +19,6 @@ programsName = programsName.replace("'", "")
 
 cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
 cursor.commit()
-
-print('{} >>> start programs detect person in meeting room'.title().format(datetime.datetime.now()))
 
 def _lineNotify(payload,file=None):
     import requests
@@ -121,4 +122,4 @@ cursor.commit()
 
 cap.release()
 # cv2.destroyAllWindows()
-print('{} >>> end programs detect person in meeting room'.title().format(datetime.datetime.now()))
+print('{} >>> end detect person location meeting room'.title().format(datetime.datetime.now()))
