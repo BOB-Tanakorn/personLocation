@@ -111,9 +111,6 @@ if save_picture_success == True:
     # cv2.imshow('frame', image_np)
     # cv2.waitKey(0)
 
-cursor = cursor.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, programsName))
-cursor.commit()
-
 cap.release()
 # cv2.destroyAllWindows()
 print('{} >>> end detect person location meeting room'.title().format(datetime.datetime.now()))

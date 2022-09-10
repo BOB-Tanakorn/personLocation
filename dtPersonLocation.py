@@ -5,6 +5,13 @@ import time
 
 pathBacthFile = os.getcwd().replace('\\', '/')
 
+connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=sa; PWD=123456")
+
+locationMeeting = 'personMeetingRoom'
+locationMeeting = locationMeeting.replace("'", "")
+cursorMeeting = connect.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, locationMeeting))
+cursorMeeting.commit()
+
 countMeetingRoom = 0
 
 startMeetingRoom = 600
@@ -40,6 +47,8 @@ while True:
                 countMeetingRoom = 0
                 startMeetingRoom = 600
                 detectMeetingRoom = False
+                runMeetingRoom = runMeetingRoom.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, programsName))
+                runMeetingRoom.commit()
     
     # break
     time.sleep(1)
