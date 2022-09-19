@@ -5,7 +5,7 @@ import time
 
 pathBacthFile = os.getcwd().replace('\\', '/')
 
-connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=sa; PWD=123456")
+connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=comVision; PWD=123456")
 
 locationMeeting = 'personMeetingRoom'
 locationMeeting = locationMeeting.replace("'", "")
@@ -14,7 +14,7 @@ cursorMeeting.commit()
 
 countMeetingRoom = 0
 
-startMeetingRoom = 600
+startMeetingRoom = 6
 
 while True:
     countMeetingRoom += 1
@@ -22,33 +22,39 @@ while True:
     if countMeetingRoom == startMeetingRoom:
         detectMeetingRoom = True
         while detectMeetingRoom:
+            timeMeetingRoom = 5
             #connect database
-            connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=sa; PWD=123456")
+            connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=comVision; PWD=123456")
             cursorMeetingRoom = connect.cursor()
             runMeetingRoom = connect.cursor()
             cursorMeetingRoom = cursorMeetingRoom.execute('SELECT status FROM statusPrograms')
             cursorMeetingRoom = cursorMeetingRoom.fetchall()
-
+            
+            ltMeetingRoom = []
             for iMeetingRoom in cursorMeetingRoom:
-                if iMeetingRoom[0] == False:
-                    prgRedey = True
-                else:
-                    prgRedey = False
-                    break
+                ltMeetingRoom.append(iMeetingRoom[0])
 
-            time.sleep(5)
-            if prgRedey == True:
-                programsName = 'personMeetingRoom'
-                programsName = programsName.replace("'", "")
-                runMeetingRoom = runMeetingRoom.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
-                runMeetingRoom.commit()
-                os.system(pathBacthFile + '/utils/meetingRoom.bat')
-                timeProcess = 1
-                countMeetingRoom = 0
-                startMeetingRoom = 600
-                detectMeetingRoom = False
-                runMeetingRoom = runMeetingRoom.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, programsName))
-                runMeetingRoom.commit()
+            if True in ltMeetingRoom:
+                prgRedey = False
+                pass
+            else:
+                prgRedey = True
+                timeMeetingRoom = 1
+                break
+
+            time.sleep(timeMeetingRoom)
+        if prgRedey == True:
+            programsName = 'personMeetingRoom'
+            programsName = programsName.replace("'", "")
+            runMeetingRoom = runMeetingRoom.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (True, programsName))
+            runMeetingRoom.commit()
+            os.system(pathBacthFile + '/utils/meetingRoom.bat')
+            timeProcess = 1
+            countMeetingRoom = 0
+            startMeetingRoom = 900
+            detectMeetingRoom = False
+            runMeetingRoom = runMeetingRoom.execute('UPDATE statusPrograms SET status=? WHERE programs=?', (False, programsName))
+            runMeetingRoom.commit()
     
     # break
     time.sleep(1)

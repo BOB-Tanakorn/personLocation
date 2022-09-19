@@ -9,9 +9,10 @@ import pyodbc
 
 
 print('{} >>> start detect person location meeting room'.title().format(datetime.datetime.now()))
+start_time = time.time()
 
 #connect database
-connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=sa; PWD=123456")
+connect = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server}; SERVER=localhost; DATABASE=projectComputerVision; UID=comVision; PWD=123456")
 cursor = connect.cursor()
 
 def _lineNotify(payload,file=None):
@@ -29,13 +30,16 @@ def notifyFile(filename, person):
     payload = {'message':'แจ้งเตือน ตรวจพบบุคคลในห้องประชุมจำนวนคน : {} คน'.format(person)}
     return _lineNotify(payload,file)
 
-#aws
-mydb = mysql.connector.connect(
-  host="db-rds-ptf.cpuqyug93oho.ap-southeast-1.rds.amazonaws.com",
-  user="ptfadmin",
-  password="5DkMvfUgD6gE7aSREq7a57L92ssfWV",
-  database="smartenergy"
-)
+try:
+    #aws
+    mydb = mysql.connector.connect(
+    host="db-rds-ptf.cpuqyug93oho.ap-southeast-1.rds.amazonaws.com",
+    user="ptfadmin",
+    password="5DkMvfUgD6gE7aSREq7a57L92ssfWV",
+    database="smartenergy"
+    )
+except:
+    print('{} >>> not connect cloud AWS !!!'.upper().format(datetime.datetime.now()))
 
 path = os.getcwd().replace('\\', '/')
 
@@ -52,7 +56,7 @@ except:
     pass
 
 path_camera = "rtsp://admin:888888@192.168.1.207:10554/tcp/av0_0"
-time_strf = time.strftime("%d-" "%m-" "%Y"" " "%H." "%M." "%S")
+timeStrf = time.strftime("%d-" "%m-" "%Y""_" "%H." "%M." "%S")
 
 try:
     cap = cv2.VideoCapture(path_camera)
@@ -80,7 +84,8 @@ if save_picture_success == True:
         use_normalized_coordinates=True,
         skip_labels=False,
         skip_scores=True,
-        min_score_thresh=0.9,
+        skip_boxes=False,
+        min_score_thresh=0.8,
         line_thickness=2)
 
     countLen = 0
@@ -88,7 +93,7 @@ if save_picture_success == True:
     # print('class', (output_dict['detection_classes']))
     for i in (output_dict['detection_classes']):
         if i == 1:
-            valuesPerson = output_dict['detection_scores'][countLen] >= 0.9
+            valuesPerson = output_dict['detection_scores'][countLen] >= 0.8
             if valuesPerson == True:
                 countPerson += 1
         countLen += 1
@@ -97,20 +102,35 @@ if save_picture_success == True:
     cv2.imwrite(path_img_after, image_np)
 
     if countPerson >= 1:
-        notifyFile(path_img_after, countPerson)
-        mycursor = mydb.cursor()
-        mycursor.execute('UPDATE machine_noload_status SET status=1 WHERE id=1')
-        mydb.commit()
+        cv2.imwrite(path + '/utils/picture/dataPicture/meetingRoom_{}.png'.format(timeStrf), frame)
+        try:
+            notifyFile(path_img_after, countPerson)
+        except:
+            print('{} >>> not send line check internet connection'.title().format(datetime.datetime.now()))
+
+        try:
+            mycursor = mydb.cursor()
+            mycursor.execute('UPDATE machine_noload_status SET status=1 WHERE id=1')
+            mydb.commit()
+        except:
+            print('{} >>> not update value to data base check internet connection'.title().format(datetime.datetime.now()))
 
     else:
         # notifyFile(path_img_after, countPerson)
-        mycursor = mydb.cursor()
-        mycursor.execute('UPDATE machine_noload_status SET status=0 WHERE id=1')
-        mydb.commit()
+        try:
+            mycursor = mydb.cursor()
+            mycursor.execute('UPDATE machine_noload_status SET status=0 WHERE id=1')
+            mydb.commit()
+        except:
+            print('{} >>> not update value to data base check internet connection'.title().format(datetime.datetime.now()))
 
     # cv2.imshow('frame', image_np)
     # cv2.waitKey(0)
 
 cap.release()
 # cv2.destroyAllWindows()
+
+elapsed = time.time() - start_time
+print("Done in ", elapsed, " second(s)")
+
 print('{} >>> end detect person location meeting room'.title().format(datetime.datetime.now()))
