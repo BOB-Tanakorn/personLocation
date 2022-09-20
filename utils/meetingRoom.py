@@ -85,7 +85,7 @@ if save_picture_success == True:
         skip_labels=False,
         skip_scores=True,
         skip_boxes=False,
-        min_score_thresh=0.8,
+        min_score_thresh=0.9,
         line_thickness=2)
 
     countLen = 0
@@ -93,7 +93,7 @@ if save_picture_success == True:
     # print('class', (output_dict['detection_classes']))
     for i in (output_dict['detection_classes']):
         if i == 1:
-            valuesPerson = output_dict['detection_scores'][countLen] >= 0.8
+            valuesPerson = output_dict['detection_scores'][countLen] >= 0.9
             if valuesPerson == True:
                 countPerson += 1
         countLen += 1
